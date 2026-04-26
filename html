@@ -14,24 +14,56 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .animated-bg { background: linear-gradient(-45deg, #FFD1DC, #E6E6FA, #B3E5FC, #F3E5F5); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
-        .animate-reveal { animation: fadeInSlide 0.8s ease-out forwards; opacity: 0; }
-        @keyframes fadeInSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+        @keyframes gradientBG { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+        .animated-bg { 
+            background: linear-gradient(-45deg, #FFD1DC, #E6E6FA, #B3E5FC, #F3E5F5); 
+            background-size: 400% 400%; 
+            animation: gradientBG 15s ease infinite; 
+        }
+        .animate-reveal { 
+            animation: fadeInSlide 0.8s ease-out forwards; 
+            opacity: 0; 
+        }
+        @keyframes fadeInSlide { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .bg-clip-text { 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+        }
         .delay-1 { animation-delay: 0.2s; }
         .delay-2 { animation-delay: 0.5s; }
         .delay-3 { animation-delay: 0.8s; }
         .delay-4 { animation-delay: 1.1s; }
         .delay-5 { animation-delay: 1.4s; }
         .delay-6 { animation-delay: 1.7s; }
+        
+        /* Fallback for icons if library loads slowly */
+        .icon-placeholder {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: currentColor;
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div class="min-h-screen flex items-center justify-center font-sans">
+            <p class="text-slate-400 animate-pulse text-lg">טוען את החגיגה...</p>
+        </div>
+    </div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const App = () => {
           const [screen, setScreen] = useState('intro');
@@ -44,11 +76,19 @@
           const [dafnaImageError, setDafnaImageError] = useState(false);
           const [card0Error, setCard0Error] = useState(false);
 
-          // הפעלת האייקונים בכל פעם שהמסך משתנה
-          useEffect(() => {
-            if (window.lucide) {
-              window.lucide.createIcons();
+          // פונקציה לעדכון אייקונים בצורה בטוחה
+          const updateIcons = () => {
+            try {
+              if (window.lucide) {
+                window.lucide.createIcons();
+              }
+            } catch (e) {
+              console.log("Lucide not yet ready");
             }
+          };
+
+          useEffect(() => {
+            updateIcons();
           }, [screen, currentCard, isAnimating]);
 
           useEffect(() => {
@@ -58,14 +98,20 @@
           const drawCard = () => {
             if (deck.length === 0 || isAnimating) return;
             setIsAnimating(true);
+            
+            // אפקט החלקה פשוט ונקי
             setTimeout(() => {
               const randomIndex = Math.floor(Math.random() * deck.length);
               const selectedCard = deck[randomIndex];
               const newDeck = deck.filter((_, index) => index !== randomIndex);
+
               setCurrentCard(selectedCard);
               setDeck(newDeck);
               setHistory([selectedCard, ...history]);
-              setTimeout(() => { setIsAnimating(false); }, 50);
+              
+              setTimeout(() => {
+                setIsAnimating(false);
+              }, 50);
             }, 400); 
           };
 
@@ -81,6 +127,7 @@
           const CardContent = ({ cardNumber }) => {
             const isBack = cardNumber === 0;
             const fileName = `card${cardNumber}.png`;
+            
             if (imageError && !isBack) {
               return (
                 <div className="w-full h-full bg-[#F3E5F5] flex flex-col items-center justify-center p-4 text-center">
@@ -119,7 +166,7 @@
                     <div className="relative mb-8">
                       <div className="w-36 h-36 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center">
                         {!dafnaImageError ? (
-                            <img src="dafna.png" className="w-full h-full object-cover" onError={() => setDafnaImageError(true)} />
+                            <img src="dafna.png" alt="דפנה" className="w-full h-full object-cover" onError={() => setDafnaImageError(true)} />
                         ) : (
                             <i data-lucide="user" className="text-[#9575CD] w-16 h-16"></i>
                         )}
@@ -145,25 +192,36 @@
                 {screen === 'game' && (
                   <div className="flex-1 flex flex-col animate-reveal">
                     <div className="pt-8 px-8 text-center">
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent">מזל טוב לדפנה שלנו</h2>
-                      <div className="inline-flex items-center gap-2 mt-3 px-5 py-1.5 bg-[#F3E5F5] rounded-full text-sm font-bold text-[#7B1FA2] border border-[#D1C4E9]/50 shadow-sm">
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent text-center">מזל טוב לדפנה שלנו</h2>
+                      <div className="inline-flex items-center gap-2 mt-3 px-5 py-1.5 bg-[#F3E5F5] rounded-full text-sm font-bold text-[#7B1FA2] border border-[#D1C4E9]/50 shadow-sm mx-auto">
                         <i data-lucide="layers" className="w-4 h-4"></i>
                         <span>נותרו {deck.length} קלפים</span>
                       </div>
                     </div>
                     <div className="p-8 flex-1 flex justify-center items-center overflow-hidden">
-                      <div className={`w-56 h-80 bg-white rounded-[2.5rem] shadow-2xl border-[12px] border-white ring-2 ring-[#D1C4E9]/30 flex items-center justify-center transition-all duration-500 ease-in-out transform ${isAnimating ? 'opacity-0 -translate-y-16 scale-90 blur-sm' : 'opacity-100 translate-y-0 scale-100 blur-0'}`}>
+                      <div 
+                        className={`w-56 h-80 bg-white rounded-[2.5rem] shadow-2xl border-[12px] border-white ring-2 ring-[#D1C4E9]/30 flex items-center justify-center transition-all duration-500 ease-in-out transform
+                          ${isAnimating ? 'opacity-0 -translate-y-16 scale-90 blur-sm' : 'opacity-100 translate-y-0 scale-100 blur-0'}
+                        `}
+                      >
                         <CardContent cardNumber={currentCard} />
                       </div>
                     </div>
                     <div className="px-8 pb-10 flex flex-col gap-4 items-center">
                       {deck.length > 0 ? (
-                        <button onClick={drawCard} disabled={isAnimating} className="w-full py-5 rounded-2xl font-bold text-xl bg-[#FFD1DC] text-[#880E4F] hover:bg-[#ffb7c5] shadow-xl shadow-pink-100 active:scale-90 transition-all flex items-center justify-center gap-2 border-b-4 border-[#F06292]">
+                        <button
+                          onClick={drawCard}
+                          disabled={isAnimating}
+                          className="w-full py-5 rounded-2xl font-bold text-xl bg-[#FFD1DC] text-[#880E4F] hover:bg-[#ffb7c5] shadow-xl shadow-pink-100 active:scale-90 transition-all flex items-center justify-center gap-2 border-b-4 border-[#F06292]"
+                        >
                           <i data-lucide="sparkles" className="w-5 h-5"></i>
                           <span>הגרילי קלף</span>
                         </button>
                       ) : (
-                        <button onClick={() => setScreen('end')} className="w-full py-6 rounded-2xl font-black text-2xl bg-[#B3E5FC] text-[#01579B] hover:bg-[#81D4FA] shadow-xl animate-bounce flex items-center justify-center gap-3 border-b-4 border-[#4FC3F7]">
+                        <button
+                          onClick={() => setScreen('end')}
+                          className="w-full py-6 rounded-2xl font-black text-2xl bg-[#B3E5FC] text-[#01579B] hover:bg-[#81D4FA] shadow-xl animate-bounce flex items-center justify-center gap-3 border-b-4 border-[#4FC3F7]"
+                        >
                           <span>למעבר לברכה המלאה</span>
                           <i data-lucide="heart" className="w-6 h-6"></i>
                         </button>
@@ -180,4 +238,49 @@
                 {screen === 'end' && (
                   <div className="p-6 flex-1 flex flex-col items-center justify-center animate-reveal text-center relative overflow-hidden">
                     <div className="mb-6 flex justify-center items-center gap-2">
-                      <div className="w
+                      <div className="w-14 h-14 bg-gradient-to-br from-[#B3E5FC] to-[#81D4FA] rounded-2xl rotate-12 flex items-center justify-center shadow-lg animate-reveal delay-1">
+                        <i data-lucide="quote" className="text-white -rotate-12 w-8 h-8"></i>
+                      </div>
+                      <SmallDafnaCard />
+                    </div>
+                    <div className="bg-white/50 p-6 rounded-[3rem] border border-white/80 shadow-inner space-y-5 relative overflow-hidden">
+                      <h3 className="text-3xl font-black mb-6 animate-reveal delay-2 relative inline-block bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent">
+                        דפנה יקרה,
+                        <div className="absolute -bottom-1.5 left-0 right-0 h-1 bg-[#FFD1DC] rounded-full"></div>
+                      </h3>
+
+                      <div className="space-y-3 text-slate-800 text-base md:text-lg leading-relaxed font-medium">
+                        <p className="animate-reveal delay-3 text-[#4A148C]">אנו מאחלים לך בריאות איתנה, שמחה ושקט בלב,</p>
+                        <p className="animate-reveal delay-4 text-[#7B1FA2]">שתמשיכי להיות מוקפת באהבת משפחתך,</p>
+                        <p className="animate-reveal delay-5 text-[#880E4F]">ולהרחיב עוד ועוד מעגלי השפעה של טוב, השראה ואנרגיות מעצימות.</p>
+                        <p className="font-bold text-lg pt-1 animate-reveal delay-6 bg-gradient-to-r from-[#7B1FA2] to-[#D81B60] bg-clip-text text-transparent text-center">
+                          שתמשיכי לגעת, להוביל, וליצור עולם טוב יותר – בדרכך הייחודית והמרגשת.
+                        </p>
+                      </div>
+                      
+                      <div className="pt-6 animate-reveal" style={{animationDelay: '2s'}}>
+                        <div className="inline-block px-8 py-4 bg-gradient-to-r from-[#F3E5F5] to-[#E1BEE7] rounded-full shadow-lg border border-white transition-transform hover:scale-105 duration-300">
+                          <p className="text-lg font-bold text-[#D81B60] mb-0.5 text-center">באהבה גדולה,</p>
+                          <p className="text-2xl md:text-3xl font-black bg-gradient-to-r from-[#4A148C] to-[#7B1FA2] bg-clip-text text-transparent tracking-tight text-center">
+                            מפקחי היסודי
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 text-[10px] font-bold text-[#9575CD]/60 tracking-widest uppercase text-center">אפריל 2026</div>
+                    <button onClick={resetGame} className="w-full py-3 text-[#9575CD] hover:text-[#6A1B9A] font-black uppercase tracking-tighter transition-all flex items-center justify-center gap-2 text-xs">
+                      <i data-lucide="refresh-cw" className="w-3 h-3"></i> חזרה להתחלה
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
