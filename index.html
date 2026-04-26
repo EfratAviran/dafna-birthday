@@ -27,6 +27,10 @@
             from { opacity: 0; transform: translateY(20px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
         body { font-family: 'Assistant', sans-serif; }
     </style>
@@ -82,8 +86,9 @@
                 <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-700 relative overflow-hidden" dir="rtl">
                     <div className="animated-bg absolute inset-0 -z-10"></div>
 
-                    <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl border border-white/60 overflow-hidden min-h-[650px] flex flex-col relative">
+                    <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-[3rem] shadow-2xl border border-white/60 overflow-hidden min-h-[680px] flex flex-col relative">
                         
+                        {/* מסך פתיחה - ללא שינוי */}
                         {screen === 'intro' && (
                             <div className="p-8 flex-1 flex flex-col items-center justify-center text-center animate-reveal">
                                 <div className="relative mb-8">
@@ -98,11 +103,11 @@
                                         <IconHeart fill="currentColor" />
                                     </div>
                                 </div>
-                                <h1 className="text-4xl font-black mb-4 bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent">מזל טוב דפנה!</h1>
+                                <h1 className="text-4xl font-black mb-4 bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent tracking-tight">מזל טוב דפנה!</h1>
                                 <div className="space-y-4 text-lg text-slate-600 px-2 text-right">
                                     <p className="font-bold text-[#7B1FA2] text-xl pr-4">דפנה יקרה,</p>
                                     <p>לרגל יום הולדתך, בחרנו להעניק לך שי צנוע של הערכה:</p>
-                                    <div className="bg-[#F3E5F5]/60 p-5 rounded-2xl italic border border-[#D1C4E9] text-[#6A1B9A] text-center">כל מפקחת ומפקח שיתפו בתכונה ייחודית אחת המאפיינת אותך בעיניהם.</div>
+                                    <div className="bg-[#F3E5F5]/60 p-5 rounded-2xl italic border border-[#D1C4E9] text-[#6A1B9A] text-center shadow-sm">כל מפקחת ומפקח שיתפו בתכונה ייחודית אחת המאפיינת אותך בעיניהם.</div>
                                 </div>
                                 <button onClick={() => setScreen('game')} className="mt-10 w-full py-5 rounded-2xl font-bold text-xl bg-gradient-to-r from-[#FFD1DC] to-[#ffb7c5] text-[#880E4F] shadow-lg border-b-4 border-[#F06292] active:scale-95 transition-all flex items-center justify-center gap-3">
                                     <span>הצג דברי מפקחים</span> <IconSparkles />
@@ -110,15 +115,14 @@
                             </div>
                         )}
 
+                        {/* מסך המשחק - ללא שינוי */}
                         {screen === 'game' && (
                             <div className="flex-1 flex flex-col animate-reveal">
                                 <div className="pt-6 px-8 text-center">
                                     <h2 className="text-2xl font-bold bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent">מזל טוב דפנה!</h2>
                                     <div className="inline-block mt-2 px-4 py-1 bg-[#F3E5F5] rounded-full text-xs font-bold text-[#7B1FA2]">נותרו {deck.length} קלפים</div>
                                 </div>
-
                                 <div className="p-6 flex-1 flex justify-center items-center">
-                                    {/* הקלפים כאן נשארים גדולים ופרוסים על כל הכרטיסייה */}
                                     <div className={`relative max-w-xs w-full bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 transform
                                         ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
                                         <img 
@@ -132,7 +136,6 @@
                                         />
                                     </div>
                                 </div>
-
                                 <div className="px-8 pb-8 flex flex-col gap-3">
                                     {(deck.length > 0 || isAnimating) ? (
                                         <button onClick={drawCard} disabled={isAnimating} className="w-full py-5 rounded-2xl font-bold text-xl bg-[#FFD1DC] text-[#880E4F] border-b-4 border-[#F06292] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
@@ -150,35 +153,58 @@
                             </div>
                         )}
 
+                        {/* מסך הברכה הסופי - מעוצב מחדש עם הברכה המקורית */}
                         {screen === 'end' && (
-                            <div className="p-8 flex-1 flex flex-col items-center animate-reveal text-center">
-                                {/* כאן התמונה מוקטנת (max-h-40) כדי שהברכה תיכנס בשלמותה */}
-                                <div className="mb-2 mt-2 flex justify-center items-center">
-                                    <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-white transform rotate-2">
-                                        <img 
-                                            src="card0.png" 
-                                            alt="סיום"
-                                            className="w-full h-auto max-h-40 object-contain block"
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = `https://via.placeholder.com/400x300/F3E5F5/9575CD?text=מזל+טוב`;
-                                            }}
-                                        />
+                            <div className="p-6 flex-1 flex flex-col items-center animate-reveal text-center relative overflow-hidden">
+                                <div className="absolute top-5 left-5 text-[#FFD1DC] opacity-20 animate-pulse"><IconHeart fill="currentColor" /></div>
+                                
+                                {/* תמונה מוקטנת משמעותית כדי לפנות מקום */}
+                                <div className="mb-4 mt-2 flex justify-center items-center animate-reveal delay-1">
+                                    <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-white transform rotate-2">
+                                        {!card0Error ? (
+                                            <img 
+                                                src="card0.png" 
+                                                alt="סיום"
+                                                className="w-full h-auto max-h-36 object-contain block"
+                                                onError={() => setCard0Error(true)}
+                                            />
+                                        ) : (
+                                            <div className="w-24 h-24 bg-purple-50 flex items-center justify-center"><IconHeart fill="#D81B60" /></div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 w-full">
-                                    <h3 className="text-3xl font-black text-[#4A148C]">דפנה יקרה,</h3>
-                                    <div className="text-slate-700 leading-relaxed space-y-2 text-right px-2">
-                                        <p>אנו מאחלים לך בריאות איתנה ושמחה בלב,</p>
-                                        <p>שתמשיכי להיות מוקפת באהבה,</p>
-                                        <p>ולהרחיב מעגלי השפעה של טוב והשראה.</p>
-                                        <p className="font-bold text-[#D81B60] text-lg pt-2 text-center">באהבה גדולה,<br/>מפקחי היסודי</p>
+                                {/* הברכה המקורית בעיצוב צבעוני */}
+                                <div className="bg-white/50 p-5 rounded-[2.5rem] border border-white/80 shadow-inner space-y-4 w-full">
+                                    <h3 className="text-3xl font-black bg-gradient-to-r from-[#4A148C] to-[#D81B60] bg-clip-text text-transparent relative inline-block animate-reveal delay-2">
+                                        דפנה יקרה,
+                                        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#FFD1DC] rounded-full" />
+                                    </h3>
+
+                                    <div className="space-y-3 text-slate-800 text-[15px] leading-relaxed font-medium animate-reveal delay-3">
+                                        <p className="text-[#4A148C] font-semibold">מאחלים לך בריאות איתנה, שמחה ושקט בלב,</p>
+                                        <p className="text-[#7B1FA2]">שתמשיכי להיות מוקפת באהבת משפחתך,</p>
+                                        <p className="text-[#880E4F]">ולהרחיב עוד ועוד מעגלי השפעה של טוב, השראה ואנרגיות מעצימות.</p>
+                                        <p className="font-bold text-[#D81B60] bg-gradient-to-r from-[#7B1FA2] to-[#D81B60] bg-clip-text text-transparent">
+                                            שתמשיכי לגעת, להוביל, וליצור עולם טוב יותר – בדרכך הייחודית והמרגשת.
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="pt-4">
+                                        <div className="inline-block px-8 py-3 bg-gradient-to-r from-[#F3E5F5] to-[#E1BEE7] rounded-full shadow-md border border-white">
+                                            <p className="text-sm font-bold text-[#D81B60]">באהבה,</p>
+                                            <p className="text-xl font-black bg-gradient-to-r from-[#4A148C] to-[#7B1FA2] bg-clip-text text-transparent">
+                                                מפקחי היסודי
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                                <button onClick={resetGame} className="mt-auto mb-2 text-[#9575CD] hover:text-[#6A1B9A] font-bold flex items-center gap-2 text-xs">
+
+                                <button onClick={resetGame} className="mt-auto mb-2 text-[#9575CD] hover:text-[#6A1B9A] font-bold flex items-center gap-2 text-xs transition-colors">
                                     <IconRefresh /> חזרה להתחלה
                                 </button>
+                                
+                                <div className="mb-2 text-[10px] font-bold text-[#9575CD]/40 uppercase tracking-widest">אפריל 2026</div>
                             </div>
                         )}
                     </div>
